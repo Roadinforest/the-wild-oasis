@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import {getSettings} from '../../services/apiSettings'
+import { getSettings } from '../../services/apiSettings';
 
 export function useSettings() {
   const {
@@ -11,5 +11,5 @@ export function useSettings() {
     queryFn: getSettings,
   });
 
-  return {isLoading,error,settings}
+  return { isLoading, error, settings };
 }
