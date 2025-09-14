@@ -132,10 +132,8 @@ function CreateCabinForm({ cabinToEdit = {}, onCloseModal }) {
         <FileInput
           id="image"
           accept="image/*"
-          placeholder="https://brshhzwhidatgeojayyt.supabase.co/storage/v1/object/public/cabin-images/cabin-005.jpg"
           {...register('image', {
-            // required: isEditSession ? false : "This field is required",
-            required: false,
+            required: isEditSession ? false : "This field is required",
             validate: (fileList) => {
               console.log(fileList);
               const file = fileList[0];

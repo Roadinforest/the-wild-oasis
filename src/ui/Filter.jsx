@@ -1,3 +1,4 @@
+import { useSearchParams } from 'react-router';
 import styled, { css } from 'styled-components';
 
 const StyledFilter = styled.div`
@@ -33,3 +34,32 @@ const FilterButton = styled.button`
     color: var(--color-brand-50);
   }
 `;
+
+function Filter({ filterField, options }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const currentFilter = searchParams.get(filterField || options.at(0).value);
+
+  function handleClick(value) {
+    searchParams.set(filterField, value);
+    if (searchParams.get('page')) searchParams.set('page', 1); //防止页码过大导致无法加载
+    setSearchParams(searchParams);
+  }
+
+  return (
+    <StyledFilter>
+      {options.map(({ value, label }) => (
+        <FilterButton
+          key={value}
+          onClick={() => handleClick(value)}
+          active={value === currentFilter}
+          disabled={value === currentFilter}
+        >
+          {label}
+        </FilterButton>
+      ))}
+    </StyledFilter>
+  );
+}
+
+export default Filter;
