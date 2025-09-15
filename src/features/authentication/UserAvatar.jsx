@@ -8,6 +8,7 @@ const StyledUserAvatar = styled.div`
   font-weight: 500;
   font-size: 1.4rem;
   color: var(--color-grey-600);
+  padding: 0 3rem;
 `;
 
 const Avatar = styled.img`

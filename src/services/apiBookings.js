@@ -1,22 +1,22 @@
 import { getToday } from '../utils/helpers';
 import supabase from './supabase';
-import { PAGE_SIZE } from "../utils/constants";
+import { PAGE_SIZE } from '../utils/constants';
 
 export async function getBookings({ filter, sortBy, page }) {
   let query = supabase
-    .from("bookings")
+    .from('bookings')
     .select(
-      "id, created_at, startDate, endDate, numNights, numGuests, status, totalPrice, cabins(name), guests(fullName, email)",
-      { count: "exact" }
+      'id, created_at, startDate, endDate, numNights, numGuests, status, totalPrice, cabins(name), guests(fullName, email)',
+      { count: 'exact' }
     );
 
   // FILTER
-  if (filter) query = query[filter.method || "eq"](filter.field, filter.value);
+  if (filter) query = query[filter.method || 'eq'](filter.field, filter.value);
 
   // SORT
   if (sortBy)
     query = query.order(sortBy.field, {
-      ascending: sortBy.direction === "asc",
+      ascending: sortBy.direction === 'asc',
     });
 
   if (page) {
@@ -29,11 +29,10 @@ export async function getBookings({ filter, sortBy, page }) {
 
   if (error) {
     console.error(error);
-    throw new Error("Bookings could not be loaded");
+    throw new Error('Bookings could not be loaded');
   }
 
   return { data, count };
-
 }
 
 export async function getBooking(id) {
@@ -47,7 +46,6 @@ export async function getBooking(id) {
     console.error(error);
     throw new Error('Booking not found');
   }
-
 
   return data;
 }
@@ -72,7 +70,6 @@ export async function getBookingsAfterDate(date) {
 export async function getStaysAfterDate(date) {
   const { data, error } = await supabase
     .from('bookings')
-    // .select('*')
     .select('*, guests(fullName)')
     .gte('startDate', date)
     .lte('startDate', getToday());
@@ -95,7 +92,7 @@ export async function getStaysTodayActivity() {
     )
     .order('created_at');
 
-  // Equivalent to this. But by querying this, we only download the data we actually need, otherwise we would need ALL bookings ever created
+  //相当于
   // (stay.status === 'unconfirmed' && isToday(new Date(stay.startDate))) ||
   // (stay.status === 'checked-in' && isToday(new Date(stay.endDate)))
 
