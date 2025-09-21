@@ -36,14 +36,14 @@ export function useBookings() {
   // PRE-FETCHING
   const pageCount = Math.ceil(count / PAGE_SIZE);
 
-  // 后一页
+  // Later Page
   if (page < pageCount)
     queryClient.prefetchQuery({
       queryKey: ['bookings', filter, sortBy, page + 1],
       queryFn: () => getBookings({ filter, sortBy, page: page + 1 }),
     });
 
-  // 前一页
+  // Front Page
   if (page > 1)
     queryClient.prefetchQuery({
       queryKey: ['bookings', filter, sortBy, page - 1],
