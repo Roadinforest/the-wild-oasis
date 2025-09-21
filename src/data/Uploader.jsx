@@ -7,6 +7,8 @@ import { subtractDates } from '../utils/helpers';
 import { bookings } from './data-bookings';
 import { cabins } from './data-cabins';
 import { guests } from './data-guests';
+import Heading from '../ui/Heading';
+import toast from 'react-hot-toast';
 
 // const originalSettings = {
 //   minBookingLength: 3,
@@ -99,35 +101,46 @@ async function createBookings() {
 }
 
 function Uploader() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState({ status: false, which: null });
 
   async function uploadAll() {
-    setIsLoading(true);
-    // Bookings need to be deleted FIRST
-    await deleteBookings();
-    await deleteGuests();
-    await deleteCabins();
+    setIsLoading({ status: true, which: 'All' });
+    try {
+      // Bookings need to be deleted FIRST
+      await deleteBookings();
+      await deleteGuests();
+      await deleteCabins();
 
-    // Bookings need to be created LAST
-    await createGuests();
-    await createCabins();
-    await createBookings();
+      // Bookings need to be created LAST
+      await createGuests();
+      await createCabins();
+      await createBookings();
 
-    setIsLoading(false);
+      toast.success('Upload success!');
+    } catch (uploadError) {
+      toast.error(uploadError);
+    }
+
+    setIsLoading({ status: false, which: 'All' });
   }
 
   async function uploadBookings() {
-    setIsLoading(true);
-    await deleteBookings();
-    await createBookings();
-    setIsLoading(false);
+    setIsLoading({ status: true, which: 'Bookings' });
+    try {
+      await deleteBookings();
+      await createBookings();
+      toast.success('Upload success!');
+    } catch (uploadError) {
+      toast.error(uploadError);
+    }
+    setIsLoading({ status: false, which: 'Bookings' });
   }
 
   return (
     <div
       style={{
         marginTop: 'auto',
-        backgroundColor: '#e0e7ff',
+        backgroundColor: 'var(--color-grey-200)',
         padding: '8px',
         borderRadius: '5px',
         textAlign: 'center',
@@ -136,14 +149,18 @@ function Uploader() {
         gap: '8px',
       }}
     >
-      <h3>SAMPLE DATA</h3>
+      <Heading as="h3">SAMPLE DATA</Heading>
 
-      <Button onClick={uploadAll} disabled={isLoading}>
-        Upload ALL
+      <Button onClick={uploadAll} disabled={isLoading.status}>
+        {isLoading.status && isLoading.which === 'All'
+          ? 'Uploading...'
+          : 'Upload ALL'}
       </Button>
 
-      <Button onClick={uploadBookings} disabled={isLoading}>
-        Upload bookings ONLY
+      <Button onClick={uploadBookings} disabled={isLoading.status}>
+        {isLoading.status && isLoading.which === 'Bookings'
+          ? 'Uploading...'
+          : 'Upload bookings ONLY'}
       </Button>
     </div>
   );
