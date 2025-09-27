@@ -46,7 +46,7 @@ function CreateBookingForm({ bookingToEdit = {}, onCloseModal }) {
     console.log(data);
 
     createBooking(
-      { ...data},
+      { ...data },
       {
         onSuccess: (data) => {
           reset();
@@ -65,7 +65,6 @@ function CreateBookingForm({ bookingToEdit = {}, onCloseModal }) {
       onSubmit={handleSubmit(onSubmit, onError)}
       type={onCloseModal ? 'modal' : 'regular'}
     >
-
       <FormRow label="Num of guests" error={errors?.numGuests?.message}>
         <Input
           type="number"
@@ -76,13 +75,19 @@ function CreateBookingForm({ bookingToEdit = {}, onCloseModal }) {
         />
       </FormRow>
 
-
       <FormRow label="StartDate" error={errors?.startDate?.message}>
         <Input
           type="date"
           id="startDate"
           {...register('startDate', {
             required: 'This field is required',
+            validate: (value) => {
+              const today = new Date().toISOString().split('T')[0];
+              if (value < today) {
+                return 'Start date must be today or later';
+              }
+              return true;
+            },
           })}
         />
       </FormRow>
@@ -93,6 +98,13 @@ function CreateBookingForm({ bookingToEdit = {}, onCloseModal }) {
           id="endDate"
           {...register('endDate', {
             required: 'This field is required',
+            validate: (value) => {
+              const startDate = getValues('startDate');
+              if (startDate && value <= startDate) {
+                return 'End date must be after start date';
+              }
+              return true;
+            },
           })}
         />
       </FormRow>

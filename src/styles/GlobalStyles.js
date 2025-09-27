@@ -98,6 +98,31 @@ const GlobalStyles = createGlobalStyle`
 
 }
 
+
+input[type="date"] {
+  position: relative; /* 为绝对定位的日历图标设置参照 */
+}
+
+/* 针对 Webkit 内核浏览器 (Chrome, Edge, Safari) */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  /*
+    将日历图标 (伪元素) 绝对定位，并拉伸到覆盖整个输入框
+  */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: auto;
+  height: auto;
+  cursor: pointer; /* 保持指针样式，表示可点击 */
+  
+  /* 隐藏原始日历图标的背景，否则它可能会重复 */
+  background: transparent; 
+  /* 保持前景（图标本身）透明，因为它被拉伸后可能会遮挡文本 */
+  color: transparent; 
+}
+
 *,
 *::before,
 *::after {
