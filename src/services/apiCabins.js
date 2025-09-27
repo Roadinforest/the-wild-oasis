@@ -11,6 +11,21 @@ export async function getCabins() {
   return data;
 }
 
+
+export async function getCabinById(cabinId) {
+  const { data, error } = await supabase
+    .from('cabins')
+    .select('*')
+    .eq('id', cabinId)
+    .single();
+
+  if (error) {
+    console.error('Error fetching cabin:', error.message);
+    throw new Error(`Failed to fetch cabin with ID ${cabinId}: ${error.message}`);
+  }
+  return data;
+}
+
 export async function createEditCabin(newCabin, id) {
   const hasImagePath = newCabin.image?.startsWith?.(supabaseUrl);
 

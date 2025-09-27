@@ -19,17 +19,29 @@ import toast from 'react-hot-toast';
 
 async function deleteGuests() {
   const { error } = await supabase.from('guests').delete().gt('id', 0);
-  if (error) console.log(error.message);
+  if (error) {
+    console.error('Failed to delete guests:', error.message);
+    throw new Error(`Failed to delete guests: ${error.message}`);
+  }
+  console.log('Guests deleted successfully');
 }
 
 async function deleteCabins() {
   const { error } = await supabase.from('cabins').delete().gt('id', 0);
-  if (error) console.log(error.message);
+  if (error) {
+    console.error('Failed to delete cabins:', error.message);
+    throw new Error(`Failed to delete cabins: ${error.message}`);
+  }
+  console.log('Cabins deleted successfully');
 }
 
 async function deleteBookings() {
   const { error } = await supabase.from('bookings').delete().gt('id', 0);
-  if (error) console.log(error.message);
+  if (error) {
+    console.error('Failed to delete bookings:', error.message);
+    throw new Error(`Failed to delete bookings: ${error.message}`);
+  }
+  console.log('Bookings deleted successfully');
 }
 
 async function createGuests() {
@@ -105,6 +117,7 @@ function Uploader() {
 
   async function uploadAll() {
     setIsLoading({ status: true, which: 'All' });
+
     try {
       // Bookings need to be deleted FIRST
       await deleteBookings();
@@ -147,6 +160,8 @@ function Uploader() {
         display: 'flex',
         flexDirection: 'column',
         gap: '8px',
+        position: 'fixed',
+        top: '60vh',
       }}
     >
       <Heading as="h3">SAMPLE DATA</Heading>

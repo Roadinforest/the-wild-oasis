@@ -1,6 +1,65 @@
 import { getToday } from '../utils/helpers';
 import supabase from './supabase';
 import { PAGE_SIZE } from '../utils/constants';
+import { isFuture, isPast, isToday } from 'date-fns';
+import { subtractDates } from '../utils/helpers';
+import { getCabinById } from './apiCabins';
+
+// booking
+// {
+//   created_at: fromToday(-20, true),
+//   startDate: fromToday(0),
+//   endDate: fromToday(7),
+//   cabinId: "1",
+//   guestId: "2",
+//   hasBreakfast: true,
+//   observations:
+//     'I have a gluten allergy and would like to request a gluten-free breakfast.',
+//   numGuests: "1",
+// },
+
+export async function createBooking(booking) {
+  // const cabin = cabins.at(booking.cabinId - 1);
+  let numGuests = Number(booking.numGuests);
+  const isPaid = false;
+  const cabin = await getCabinById(booking.cabinId);
+  console.log(cabin);
+  const numNights = subtractDates(booking.endDate, booking.startDate);
+  const cabinPrice = numNights * (cabin.regularPrice - cabin.discount);
+  const extraPrice = booking.hasBreakfast
+    ? numNights * 15 * booking.numGuests
+    : 0; // hardcoded breakfast price
+  const totalPrice = cabinPrice + extraPrice;
+
+  let status;
+  if (isPast(new Date(booking.endDate)) && !isToday(new Date(booking.endDate)))
+    status = 'checked-out';
+  if (
+    isFuture(new Date(booking.startDate)) ||
+    isToday(new Date(booking.startDate))
+  )
+    status = 'unconfirmed';
+  if (
+    (isFuture(new Date(booking.endDate)) ||
+      isToday(new Date(booking.endDate))) &&
+    isPast(new Date(booking.startDate)) &&
+    !isToday(new Date(booking.startDate))
+  )
+    status = 'checked-in';
+
+  const finalBooking = {
+    ...booking,
+    numNights,
+    cabinPrice,
+    extraPrice,
+    totalPrice,
+    status,
+    isPaid,
+  };
+
+  const { error } = await supabase.from('bookings').insert(finalBooking);
+  if (error) console.log(error.message);
+}
 
 export async function getBookings({ filter, sortBy, page }) {
   let query = supabase
